@@ -1,0 +1,21 @@
+{
+  "name": "wikipedia-dump",
+  "version": "1.0.0",
+  "description": "A scalable and efficient search",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prashant R",
+  "license": "ISC",
+  "dependencies": {
+    "combined-stream": "^1.0.8",
+    "fs": "0.0.1-security",
+    "fstorm": "^0.1.3",
+    "n-readlines": "^1.0.0",
+    "natural": "^0.6.3",
+    "sax": "^1.2.4",
+    "steno": "^0.4.4",
+    "stopword": "^0.3.3"
+  }
+}
