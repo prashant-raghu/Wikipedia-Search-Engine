@@ -6,42 +6,33 @@
   var saxStream = sax.createStream(strict, strict)
   var tokenizer = new natural.WordTokenizer();
   var steno = require('steno')
-
-  var docLimit = 100;
-  var sharname = 1;
-  var pagecount = 0;
-  var pageindex = null;
-  var onpage = false;
-  var curTag = '';
-  var finallist = [];
-  var shar = new Map();
-  var totalarticles = 0;
-
-  var s = new Date();
+  //Variable Declaration + initializations
+  var docLimit = 100, sharname = 1, pagecount = 0, pageindex = null, onpage = false
+  curTag = '', finallist = [], shar = new Map(), totalarticles = 0, s = new Date();
+  //Streaming XML parser begin
   saxStream.on("opentag", function (node) {
+    //Current Tag name into curTag
     curTag = node.name;
+    //if curTag = page then increment pagecout and set onpage true
     if(node.name == 'page'){
       pagecount++;
       onpage = true;
     }
     })
-  saxStream.on("error", function (e) {
-    // unhandled errors will throw, since this is a proper node event emitter. clear the error
-    this._parser.error = null
-    this._parser.resume()
-  })
+  //event emmited when content of some tag is read
   saxStream.on("text", function (text) {
+    //Read & Write first id tag into padeindex
     if(onpage && curTag == 'id' && pageindex == null){
       pageindex = text;
     }
+    //Read title and write into pagetitle
     if(onpage && curTag == 'title'){
       text = text.replace(/([A-Z])/g, ' $1').trim();
       finallist = txtToList(text, finallist);
     }
+
     else if(onpage && curTag === 'text'){
       finallist = txtToList(text, finallist);
-      //console.log(pageindex);
-      //console.log(finallist);
       var freq = new Map();
       finallist.forEach(function(element) {
         if(freq[element])
@@ -50,19 +41,13 @@
         freq[element] = 1;
       });
       for(word in freq){
-        
         if(!hasNumber(word)){
-        //console.log(word);
-        //console.log(freq[word]);
         if(shar[word] != undefined && Array.isArray(shar[word])){
           var arr = shar[word];
-          //console.log(word);
-          //console.log(shar[word]);
           arr.push({id: pageindex,freq: freq[word]});
           shar[word] = arr;
         }
         else {
-        //  console.log(shar[word]);
           var cars = new Array({id: pageindex,freq: freq[word]});
           shar[word] = cars;
         }
@@ -83,6 +68,11 @@
       if(shar)writeshar(shar);
       console.log(Math.round((new Date() - s)/1000) + " seconds");
     }
+  })
+  saxStream.on("error", function (e) {
+    // unhandled errors will throw, since this is a proper node event emitter. clear the error
+    this._parser.error = null
+    this._parser.resume()
   })
   function writeshar(shard) {
     arr = [];
@@ -125,8 +115,8 @@
   fs.createReadStream("mini_1000.xml")
     .pipe(saxStream)
   //Merging
-  fs.readdir('./batches', (err, files) => {
-    console.log(files.length);
-    if(files.length > 0)
-    var liner = new lineByLine('./batches/1.txt');
-  });
+  // fs.readdir('./batches', (err, files) => {
+  //   console.log(files.length);
+  //   if(files.length > 0)
+  //   var liner = new lineByLine('./batches/1.txt');
+  // });

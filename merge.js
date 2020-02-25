@@ -4,7 +4,7 @@ var lineByLine = require('n-readlines');
 fs.writeFileSync("./index.txt", "");
 fs.readdir('./batches', (err, files) => {
   var index = fs.createWriteStream('./index.txt', {
-    flags: 'a' // 'a' means appending (old data will be preserved)
+    flags: 'w' // 'a' means appending (old data will be preserved)
   })
   console.log(files.length);
   for(var i=2;i<=files.length;i++){
@@ -56,27 +56,26 @@ fs.readdir('./batches', (err, files) => {
                 }
                 var sec = temp1+temp2;
                 index.write("\n" + s1 + ":" + sec);
-                l2 = batch1.next();
+                l2 = batch2.next();
                 l1 = batch1.next();
             }
             else {
                 index.write("\n" + l2);
-                l2 = batch1.next();
+                l2 = batch2.next();
             }
         }
     }
     copyData(`./batches/${i}.txt`, './index.txt')
+
+    console.log(`./batches/${i}.txt to  './index.txt' complete`);
   }
   copyData( './index.txt', `./batches/${files.length}.txt`)
+  console.log(`'./index.txt' to ./batches/${files.length}.txt  complete`);
   console.log('merging Complete');
 });
 
 function copyData(savPath, srcPath) {
-    fs.readFile(srcPath, 'utf8', function (err, data) {
-            if (err) throw err;
-            fs.writeFile (savPath, data, function(err) {
-                if (err) throw err;
-                console.log('complete');
-            });
-        });
+    var data = fs.readFileSync(srcPath)
+    fs.writeFileSync (savPath, data);
+    console.log(`${srcPath} to ${savPath} complete`);
 }
